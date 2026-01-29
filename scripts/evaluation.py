@@ -4,15 +4,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# --------------------------------------------------
-# Imports
-# --------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(PROJECT_ROOT))
 
-from src.portfolio.returns import compute_return_matrix
 from src.portfolio.covariance import compute_covariance_matrix
+from src.portfolio.returns import compute_expected_returns
 from src.portfolio.optimizer import max_sharpe_optimization
+
 
 ASSETS = ["TSLA", "SPY", "BND"]
 RISK_FREE_RATE = 0.02
@@ -22,51 +20,47 @@ def evaluate_portfolios(
     data_path="data/processed/combined.csv",
     tsla_return_path="data/processed/tsla_expected_return.csv",
 ):
-    # --------------------------------------------------
     # Load data
-    # --------------------------------------------------
     df = pd.read_csv(data_path, index_col=0, parse_dates=True)
-    returns = compute_return_matrix(df, ASSETS)
-    cov = compute_covariance_matrix(returns)
 
-    # --------------------------------------------------
+    # Load TSLA forecast return
+    tsla_forecast_return = pd.read_csv(tsla_return_path)[
+        "expected_annual_return"
+    ].iloc[0]
+
     # Expected returns
-    # --------------------------------------------------
-    hist_expected = returns.mean() * 252  # annualized historical returns
+    expected_returns = compute_expected_returns(
+        df=df,
+        tsla_forecast_return=tsla_forecast_return,
+        assets=ASSETS,
+    )
 
-    tsla_expected = pd.read_csv(tsla_return_path).iloc[0]["expected_annual_return"]
-    expected_returns = hist_expected.copy()
-    expected_returns["TSLA"] = tsla_expected  # override with forecast
+    # Covariance (from historical daily returns)
+    returns_df = df[[f"{a}_return" for a in ASSETS]]
+    cov = compute_covariance_matrix(returns_df)
 
-    # --------------------------------------------------
-    # Optimized portfolio (Max Sharpe)
-    # --------------------------------------------------
+    # Optimized portfolio
     opt_weights = max_sharpe_optimization(
-        expected_returns.values,
-        cov.values,
+        expected_returns,
+        cov,
         risk_free_rate=RISK_FREE_RATE,
     )
-    opt_weights = pd.Series(opt_weights, index=ASSETS)
 
-    # --------------------------------------------------
     # Equal-weight portfolio
-    # --------------------------------------------------
     eq_weights = pd.Series(
         np.repeat(1 / len(ASSETS), len(ASSETS)),
         index=ASSETS,
     )
 
-    # --------------------------------------------------
     # Metrics
-    # --------------------------------------------------
-    def portfolio_metrics(weights):
-        ret = np.dot(weights, expected_returns)
-        vol = np.sqrt(np.dot(weights.T, np.dot(cov.values, weights)))
+    def metrics(weights):
+        ret = weights @ expected_returns
+        vol = np.sqrt(weights.T @ cov.values @ weights)
         sharpe = (ret - RISK_FREE_RATE) / vol
         return ret, vol, sharpe
 
-    opt_metrics = portfolio_metrics(opt_weights.values)
-    eq_metrics = portfolio_metrics(eq_weights.values)
+    opt_metrics = metrics(opt_weights)
+    eq_metrics = metrics(eq_weights)
 
     summary = pd.DataFrame(
         {
@@ -80,9 +74,7 @@ def evaluate_portfolios(
     print("\n📊 Portfolio Comparison")
     print(summary)
 
-    # --------------------------------------------------
     # Plot weights
-    # --------------------------------------------------
     plt.figure(figsize=(8, 5))
     opt_weights.plot(kind="bar")
     plt.title("Optimized Portfolio Allocation")
@@ -90,7 +82,7 @@ def evaluate_portfolios(
     plt.tight_layout()
     plt.show()
 
-    return summary
+    return summary, opt_weights
 
 
 if __name__ == "__main__":

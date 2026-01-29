@@ -1,59 +1,26 @@
-import numpy as np
 import pandas as pd
 
 
 def compute_expected_returns(
     df: pd.DataFrame,
-    forecasts: dict,
+    tsla_forecast_return: float,
+    assets=("TSLA", "SPY", "BND"),
+    trading_days: int = 252,
 ) -> pd.Series:
     """
-    Compute expected returns from price forecasts.
+    Compute expected annual returns.
 
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Historical price data
-    forecasts : dict
-        Forecasted prices for each asset
-
-    Returns
-    -------
-    pd.Series
-        Expected returns for each asset
+    TSLA: forecast-based
+    SPY & BND: historical mean returns (annualized)
     """
 
     expected_returns = {}
 
-    for asset, forecast_price in forecasts.items():
-        latest_price = df[f"{asset}_adjclose"].iloc[-1]
-        expected_return = (forecast_price - latest_price) / latest_price
-        expected_returns[asset] = expected_return
+    for asset in assets:
+        if asset == "TSLA":
+            expected_returns[asset] = tsla_forecast_return
+        else:
+            daily_mean = df[f"{asset}_return"].mean()
+            expected_returns[asset] = daily_mean * trading_days
 
     return pd.Series(expected_returns)
-
-def compute_return_matrix(df: pd.DataFrame, assets: list = None) -> pd.DataFrame:
-    """
-    Compute daily returns for selected assets in df.
-    Automatically handles '_adjclose' suffix in column names.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame containing price columns (e.g., 'TSLA_adjclose')
-    assets : list, optional
-        List of tickers to include (e.g., ['TSLA','SPY','BND'])
-        If None, use all columns.
-
-    Returns
-    -------
-    pd.DataFrame
-        Daily returns of selected assets
-    """
-    if assets is not None:
-        # Map tickers to '_adjclose' columns
-        cols = [f"{asset}_adjclose" for asset in assets]
-        df = df[cols]
-        df.columns = assets  # rename back to simple tickers
-    return df.pct_change().dropna()
-
-
