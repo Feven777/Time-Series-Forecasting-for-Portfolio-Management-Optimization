@@ -67,23 +67,34 @@ def run_forecasting_pipeline():
     )
 
     print("Forecasting complete.")
+    tsla_forecast_return = forecast.pct_change().mean()
+    return tsla_forecast_return
 
-    return forecast
 
 
 # =========================
 # Portfolio pipeline
 # =========================
 
-def run_portfolio_pipeline():
+def run_portfolio_pipeline(tsla_forecast_return):
 
     print("\n[4/4] Running portfolio optimization...")
 
     df = load_data()
 
-    expected_returns = compute_expected_returns(df)
+    assets = ["TSLA", "SPY", "BND"]
 
-    covariance_matrix = compute_covariance_matrix(df)
+# Compute return matrix
+    from src.portfolio.covariance import compute_return_matrix
+
+    returns = compute_return_matrix(df, assets)
+
+    expected_returns = compute_expected_returns(
+    df,
+    tsla_forecast_return
+)
+
+    covariance_matrix = compute_covariance_matrix(returns)
 
     portfolio_config = PortfolioConfig()
 
@@ -111,9 +122,9 @@ def main():
 
     run_data_pipeline()
 
-    forecast = run_forecasting_pipeline()
+    tsla_forecast_return = run_forecasting_pipeline()
 
-    weights = run_portfolio_pipeline()
+    weights = run_portfolio_pipeline(tsla_forecast_return)
 
     print("\nPipeline completed successfully.")
 
