@@ -26,6 +26,7 @@ from src.portfolio.optimizer import max_sharpe_optimization
 
 from src.portfolio.returns import compute_expected_returns
 from src.portfolio.covariance import compute_covariance_matrix
+from src.backtest.engine import run_rolling_backtest
 
 
 # =========================
@@ -93,6 +94,7 @@ def run_portfolio_pipeline(tsla_forecast_return):
     df,
     tsla_forecast_return
 )
+    
 
     covariance_matrix = compute_covariance_matrix(returns)
 
@@ -103,6 +105,11 @@ def run_portfolio_pipeline(tsla_forecast_return):
         covariance_matrix,
         portfolio_config.risk_free_rate
     )
+    print("\nExpected Returns:")
+    print(expected_returns)
+
+    print("\nCovariance Matrix:")
+    print(covariance_matrix)
 
     print("\nOptimal Portfolio Weights:")
     print(weights)
@@ -120,14 +127,31 @@ def main():
     print("Portfolio Forecasting Pipeline")
     print("=" * 50)
 
-    run_data_pipeline()
+    df = run_data_pipeline()
 
-    tsla_forecast_return = run_forecasting_pipeline()
+    # Single optimization (kept for reference)
+    tsla_expected_return = run_forecasting_pipeline()
+    weights = run_portfolio_pipeline(tsla_expected_return)
 
-    weights = run_portfolio_pipeline(tsla_forecast_return)
+    # --------------------------
+    # Rolling Backtest
+    # --------------------------
+
+    print("\n[5/5] Running rolling backtest...")
+
+    portfolio_history = run_rolling_backtest(
+        df=df,
+        lookback=252,
+        rebalance_freq="ME",
+        risk_free_rate=PortfolioConfig().risk_free_rate
+    )
+
+    print("\nBacktest completed.")
+    print(portfolio_history.tail())
+
+    portfolio_history.to_csv("data/processed/backtest_results.csv")
 
     print("\nPipeline completed successfully.")
-
 
 if __name__ == "__main__":
     main()

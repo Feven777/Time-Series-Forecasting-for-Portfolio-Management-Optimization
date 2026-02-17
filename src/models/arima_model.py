@@ -13,7 +13,9 @@ import matplotlib.pyplot as plt
 
 from pmdarima import auto_arima
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-
+from statsmodels.tsa.arima.model import ARIMA
+import warnings
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 # =========================
 # Paths
@@ -62,8 +64,39 @@ def fit_arima(train_series: pd.Series):
     return model
 
 
+def fit_arima_fixed(train_series: pd.Series, order: tuple):
+    """
+    Fit ARIMA using fixed (p,d,q) order.
+    Uses default statespace estimator.
+    Suppresses convergence warnings only.
+    """
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=ConvergenceWarning)
+
+        model = ARIMA(train_series, order=order)
+        fitted = model.fit()
+
+    return fitted
+
 def forecast_arima(model, n_periods: int):
-    return model.predict(n_periods=n_periods)
+    """
+    Forecast next n_periods.
+    Supports both pmdarima and statsmodels models.
+    """
+
+    # pmdarima model
+    if hasattr(model, "predict"):
+        try:
+            return model.predict(n_periods=n_periods)
+        except TypeError:
+            pass
+
+    # statsmodels model
+    if hasattr(model, "forecast"):
+        return model.forecast(steps=n_periods)
+
+    raise ValueError("Unsupported ARIMA model type.")
 
 
 # =========================
@@ -74,7 +107,18 @@ def evaluate_forecast(y_true, y_pred):
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     mae = mean_absolute_error(y_true, y_pred)
     return rmse, mae
-
+def select_arima_order(series: pd.Series):
+    """
+    Select ARIMA order once using auto_arima.
+    """
+    model = auto_arima(
+        series,
+        seasonal=False,
+        stepwise=True,
+        suppress_warnings=True,
+        error_action="ignore"
+    )
+    return model.order
 
 # =========================
 # Main execution

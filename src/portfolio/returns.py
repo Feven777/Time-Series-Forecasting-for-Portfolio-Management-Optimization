@@ -18,7 +18,7 @@ def compute_expected_returns(
 
     for asset in assets:
         if asset == "TSLA":
-            expected_returns[asset] = tsla_forecast_return
+            expected_returns[asset] = tsla_forecast_return * trading_days
         else:
             daily_mean = df[f"{asset}_return"].mean()
             expected_returns[asset] = daily_mean * trading_days
