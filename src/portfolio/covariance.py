@@ -32,19 +32,9 @@ def compute_return_matrix(
 
 def compute_covariance_matrix(
     returns: pd.DataFrame,
+    trading_days: int = 252,
 ) -> pd.DataFrame:
     """
-    Compute covariance matrix of asset returns.
-
-    Parameters
-    ----------
-    returns : pd.DataFrame
-        Daily return matrix
-
-    Returns
-    -------
-    pd.DataFrame
-        Covariance matrix
+    Compute annualized covariance matrix.
     """
-
-    return returns.cov()
+    return returns.cov() * trading_days
