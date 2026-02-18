@@ -31,126 +31,129 @@ src/
 
 Engineering principles applied:
 
-Modular separation of concerns
+  Modular separation of concerns
 
-Deterministic pipeline execution
+  Deterministic pipeline execution
 
-Numerical stability safeguards
+  Numerical stability safeguards
 
-Fallback allocation logic
+  Fallback allocation logic
 
-Automated testing (pytest)
+  Automated testing (pytest)
 
-CI pipeline (GitHub Actions)
+  CI pipeline (GitHub Actions)
 
 📊 Assets Used
 
-TSLA (Equity – Growth)
+  TSLA (Equity – Growth)
 
-SPY (Equity – Broad Market)
+  SPY (Equity – Broad Market)
 
-BND (Bond ETF – Fixed Income)
+  BND (Bond ETF – Fixed Income)
 
 These provide cross-asset diversification for realistic portfolio construction.
 
 🔮 Forecasting Methodology
-Model: ARIMA
+  Model: ARIMA
 
-Log-transformed prices
+  Log-transformed prices
 
-Time-aware train/test split
+  Time-aware train/test split
 
-Fixed ARIMA order for rolling stability
+  Fixed ARIMA order for rolling stability
 
-Efficient forecasting without repeated expensive auto-selection
+  Efficient forecasting without repeated expensive auto-selection
 
 Purpose:
-Estimate expected returns to drive forward-looking allocation decisions.
+  Estimate expected returns to drive forward-looking allocation decisions.
 
 📐 Portfolio Construction
-Step 1: Expected Return Estimation
+  Step 1: Expected Return Estimation
 
-Forecast-based expected returns.
+    Forecast-based expected returns.
 
-Step 2: Risk Estimation
+  Step 2: Risk Estimation
 
-Covariance matrix of asset returns.
+    Covariance matrix of asset returns.
 
-Regularization applied to prevent singular matrix errors.
+    Regularization applied to prevent singular matrix errors.
 
-Step 3: Optimization
+  Step 3: Optimization
 
-Mean-variance optimization with:
+    Mean-variance optimization with:
 
-Numerical stability controls
+    Numerical stability controls
 
-Equal-weight fallback if optimization fails
+    Equal-weight fallback if optimization fails
 
 🔁 Rolling Backtest
 
-A rolling window framework simulates real-world investment behavior:
+    A rolling window framework simulates real-world investment behavior:
 
-Forecast → Allocate → Observe return → Update portfolio
+    Forecast → Allocate → Observe return → Update portfolio
 
-Prevents look-ahead bias
+    Prevents look-ahead bias
 
-Evaluates strategy robustness
+    Evaluates strategy robustness
 
 📉 Performance Metrics
 
 The following institutional-grade metrics are implemented:
 
-Metric	Description
-CAGR	Compound Annual Growth Rate
-Annualized Volatility	Risk (standard deviation)
-Sharpe Ratio	Risk-adjusted return
-Max Drawdown	Worst peak-to-trough decline
-Sample Output
-CAGR: 0.0300
-Annualized Volatility: 0.0420
-Sharpe Ratio: 0.2495
-Max Drawdown: -0.0517
+  Metric	Description
+  CAGR	Compound Annual Growth Rate
+  Annualized Volatility	Risk (standard deviation)
+  Sharpe Ratio	Risk-adjusted return
+  Max Drawdown	Worst peak-to-trough decline
+  Sample Output
+  CAGR: 0.0300
+  Annualized Volatility: 0.0420
+  Sharpe Ratio: 0.2495
+  Max Drawdown: -0.0517
 
 Interpretation:
 
-Stable low-volatility allocation
+  Stable low-volatility allocation
 
-Controlled drawdowns (~5%)
+  Controlled drawdowns (~5%)
 
-Positive but modest risk-adjusted performance
+  Positive but modest risk-adjusted performance
 
 🧪 Engineering & Reliability
 Unit Testing
 
 5 pytest tests covering:
 
-CAGR calculation
+  CAGR calculation
 
-Volatility correctness
+  Volatility correctness
 
-Sharpe ratio behavior
+  Sharpe ratio behavior
 
-Max drawdown logic
+  Max drawdown logic
 
-Realistic data robustness
+  Realistic data robustness
 
-All tests pass.
+  All tests pass.
 
-Continuous Integration
+  Continuous Integration
 
-GitHub Actions workflow automatically:
+  GitHub Actions workflow automatically:
 
-Installs dependencies
+  Installs dependencies
 
-Runs pytest
+  Runs pytest
 
-Verifies stability on push
+  Verifies stability on push
 
 This ensures reproducibility and production-readiness.
 
 ▶️ How to Run
+
 1️⃣ Create virtual environment
+
 python -m venv .venv
+
 2️⃣ Activate environment
 
 Windows:
@@ -160,57 +163,62 @@ Windows:
 Mac/Linux:
 
 source .venv/bin/activate
+
 3️⃣ Install dependencies
+
 pip install -r requirements.txt
+
 4️⃣ Run pipeline
+
 python -m src.main
+
 📌 Key Improvements Implemented (Week 12)
 
-Stable rolling ARIMA forecasting
+  Stable rolling ARIMA forecasting
 
-Covariance matrix regularization
+  Covariance matrix regularization
 
-Fallback allocation logic
+  Fallback allocation logic
 
-Risk metrics integration
+  Risk metrics integration
 
-Automated unit testing
+  Automated unit testing
 
-CI/CD pipeline
+  CI/CD pipeline
 
 ⚠️ Limitations
 
-ARIMA assumes linear dynamics
+  ARIMA assumes linear dynamics
 
-Small rolling windows may limit statistical power
+  Small rolling windows may limit statistical power
 
-No transaction cost modeling
+  No transaction cost modeling
 
-No regime-switching logic
+  No regime-switching logic
 
-Future enhancements could include:
+  Future enhancements could include:
 
-GARCH volatility modeling
+  GARCH volatility modeling
 
-Bayesian return forecasting
+  Bayesian return forecasting
 
-Black-Litterman allocation
+  Black-Litterman allocation
 
-Transaction cost modeling
+  Transaction cost modeling
 
-Monte Carlo simulation
+  Monte Carlo simulation
 
 📈 Strategic Insight
 
 This system demonstrates how forecast-driven allocation can:
 
-Improve decision structure
+  Improve decision structure
 
-Quantify risk exposure
+  Quantify risk exposure
 
-Maintain disciplined portfolio construction
+  Maintain disciplined portfolio construction
 
-Provide measurable performance evaluation
+  Provide measurable performance evaluation
 
 It bridges:
 Quantitative finance + Robust software engineering.
