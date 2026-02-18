@@ -24,9 +24,13 @@ The goal is to simulate a forecast-driven asset allocation workflow similar to w
 src/
 │
 ├── data/                # Data fetching & preprocessing
+
 ├── models/              # ARIMA forecasting logic
+
 ├── portfolio/           # Optimization & performance metrics
+
 ├── backtest/            # Rolling backtest engine
+
 └── main.py              # End-to-end pipeline
 
 Engineering principles applied:
@@ -70,31 +74,31 @@ Purpose:
 📐 Portfolio Construction
   Step 1: Expected Return Estimation
 
-    Forecast-based expected returns.
+  Forecast-based expected returns.
 
   Step 2: Risk Estimation
 
-    Covariance matrix of asset returns.
+  Covariance matrix of asset returns.
 
-    Regularization applied to prevent singular matrix errors.
+  Regularization applied to prevent singular matrix errors.
 
   Step 3: Optimization
 
-    Mean-variance optimization with:
+  Mean-variance optimization with:
 
-    Numerical stability controls
+  Numerical stability controls
 
-    Equal-weight fallback if optimization fails
+  Equal-weight fallback if optimization fails
 
 🔁 Rolling Backtest
 
-    A rolling window framework simulates real-world investment behavior:
+  A rolling window framework simulates real-world investment behavior:
 
-    Forecast → Allocate → Observe return → Update portfolio
+  Forecast → Allocate → Observe return → Update portfolio
 
-    Prevents look-ahead bias
+  Prevents look-ahead bias
 
-    Evaluates strategy robustness
+  Evaluates strategy robustness
 
 📉 Performance Metrics
 
@@ -152,25 +156,25 @@ This ensures reproducibility and production-readiness.
 
 1️⃣ Create virtual environment
 
-python -m venv .venv
+    python -m venv .venv
 
 2️⃣ Activate environment
 
 Windows:
 
-.venv\Scripts\activate
+    .venv\Scripts\activate
 
 Mac/Linux:
 
-source .venv/bin/activate
+    source .venv/bin/activate
 
 3️⃣ Install dependencies
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 4️⃣ Run pipeline
 
-python -m src.main
+    python -m src.main
 
 📌 Key Improvements Implemented (Week 12)
 
