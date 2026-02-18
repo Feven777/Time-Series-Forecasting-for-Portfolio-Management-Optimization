@@ -27,7 +27,12 @@ from src.portfolio.optimizer import max_sharpe_optimization
 from src.portfolio.returns import compute_expected_returns
 from src.portfolio.covariance import compute_covariance_matrix
 from src.backtest.engine import run_rolling_backtest
-
+from src.portfolio.metrics import (
+    calculate_cagr,
+    calculate_annualized_volatility,
+    calculate_sharpe_ratio,
+    calculate_max_drawdown,
+)
 
 # =========================
 # Data pipeline
@@ -152,6 +157,22 @@ def main():
     portfolio_history.to_csv("data/processed/backtest_results.csv")
 
     print("\nPipeline completed successfully.")
+    
 
+    print("\n[6/6] Calculating performance metrics...")
+
+    cagr = calculate_cagr(portfolio_history["portfolio_value"])
+    volatility = calculate_annualized_volatility(portfolio_history["portfolio_return"])
+    sharpe = calculate_sharpe_ratio(
+    portfolio_history["portfolio_return"],
+    risk_free_rate=PortfolioConfig().risk_free_rate,
+)
+    max_dd = calculate_max_drawdown(portfolio_history["portfolio_value"])
+
+    print("\nPerformance Metrics:")
+    print(f"CAGR: {cagr:.4f}")
+    print(f"Annualized Volatility: {volatility:.4f}")
+    print(f"Sharpe Ratio: {sharpe:.4f}")
+    print(f"Max Drawdown: {max_dd:.4f}")
 if __name__ == "__main__":
     main()
